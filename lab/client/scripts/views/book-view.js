@@ -81,15 +81,15 @@ var app = app || {};
     })
   };
 
-// COMMENT: What is the purpose of this method?
+// COMMENT: This is showing the search form. The search form values (an object literal) make up the book argument that will get passed to find..
   bookView.initSearchFormPage = function() {
     resetView();
     $('.search-view').show();
     $('#search-form').on('submit', function(event) {
-      // COMMENT: What default behavior is being prevented here?
+      // COMMENT: This is preventing the browser from immediately submitting the form
       event.preventDefault();
 
-      // COMMENT: What is the event.target, below? What will happen if the user does not provide the information needed for the title, author, or isbn properties?
+      // COMMENT: The event.target is the form data as an object literal. If the user doesn't provide info an empty string is assigned.
       let book = {
         title: event.target.title.value || '',
         author: event.target.author.value || '',
@@ -98,31 +98,31 @@ var app = app || {};
 
       module.Book.find(book, bookView.initSearchResultsPage);
 
-      // COMMENT: Why are these values set to an empty string?
+      // COMMENT: This is clearing the form
       event.target.title.value = '';
       event.target.author.value = '';
       event.target.isbn.value = '';
     })
   }
 
-  // COMMENT: What is the purpose of this method?
+  // COMMENT: initSearchREsults page is a callback function that shows the search results to the browser.
   bookView.initSearchResultsPage = function() {
     resetView();
     $('.search-results').show();
     $('#search-list').empty();
 
-    // COMMENT: Explain how the .map() method is being used below.
+    // COMMENT: The .map() method is creating a new array by mapping of Book.array and and appending the array to search-list.
     module.Book.all.map(book => $('#search-list').append(book.toHtml()));
     $('.detail-button a').text('Add to list').attr('href', '/');
     $('.detail-button').on('click', function(e) {
-      // COMMENT: Explain the following line of code.
+      // COMMENT: This is getting the specific data-book-id from the row(s) of book data. By using .parent we can traverse the dom for an ancestor.
       module.Book.findOne($(this).parent().parent().parent().data('bookid'))
     });
   }
 
-  // COMMENT: Explain the following line of code. 
+  // COMMENT: The following code is allowing us to access bookview from a global scope. The whole function is wrapped as an IIFE (Imeediately Invoked FUnction Expression). Module is the namespace of the function allowing access to methods. 
   module.bookView = bookView;
   
-  // COMMENT: Explain the following line of code. 
+  // COMMENT: This is the immediately invoked function that is passing module into app.
 })(app)
 

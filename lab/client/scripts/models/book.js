@@ -55,14 +55,14 @@ var __API_URL__ = 'http://localhost:3000';
     .then(() => page('/'))
     .catch(errorCallback)
 
-  // COMMENT: Where is this method invoked? What is passed in as the 'book' argument when invoked? What callback will be invoked after Book.loadAll is invoked?
+  // COMMENT:This method is invoked from initSearchFromPage. initSearchResultsPage will be invoked after loadAll. book is the object literal from the form.
   Book.find = (book, callback) =>
     $.get(`${__API_URL__}/api/v1/books/find`, book)
       .then(Book.loadAll)
       .then(callback)
       .catch(errorCallback)
 
-  // COMMENT: Where is this method invoked? How does it differ from the Book.find method, above?
+  // COMMENT: This is invokes in initSearchResultsPage. It is using a :parameter to find a specific record and with that record call a function to create a new book. It is calling a new function and not a callback.
   Book.findOne = isbn =>
     $.get(`${__API_URL__}/api/v1/books/find/${isbn}`)
     .then(Book.create)

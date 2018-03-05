@@ -13,7 +13,8 @@ const PORT = process.env.PORT;
 const CLIENT_URL = process.env.CLIENT_URL;
 const TOKEN = process.env.TOKEN;
 
-// COMMENT: Explain the following line of code. What is the API_KEY? Where did it come from?
+// COMMENT: This is an application programming interface key that acts as an identifier and/or token that will give application access to data - in ths case Google's api. The process.env part of the string is a global variable used by Node.
+
 const API_KEY = process.env.GOOGLE_API_KEY;
 
 // Database Setup
@@ -31,24 +32,27 @@ app.get('/api/v1/books/find', (req, res) => {
   let url = 'https://www.googleapis.com/books/v1/volumes';
 
   // COMMENT: Explain the following four lines of code. How is the query built out? What information will be used to create the query?
+  // this is a query string being build by concatenation if the request isn't empty for each property.
   let query = ''
   if(req.query.title) query += `+intitle:${req.query.title}`;
   if(req.query.author) query += `+inauthor:${req.query.author}`;
   if(req.query.isbn) query += `+isbn:${req.query.isbn}`;
 
-  // COMMENT: What is superagent? How is it being used here? What other libraries are available that could be used for the same purpose?
+  // COMMENT: What is superagent? superagent is an api developer tool. You can use it to make an ajax request ($get) to an endpoint provided in an api. It will return key value pairs. jQuery is another library that can be used for this. Below it is being used to access value that will form a query string using the .query method.
+  
   superagent.get(url)
     .query({'q': query})
     .query({'key': API_KEY})
     .then(response => response.body.items.map((book, idx) => {
 
-      // COMMENT: The line below is an example of destructuring. Explain destructuring in your own words.
+      // COMMENT: Destructuring allows us to assign a variable from an object without having to use multiple lines of code. title = book.volumeInfo.title X 5 vs one line.
+
       let { title, authors, industryIdentifiers, imageLinks, description } = book.volumeInfo;
 
-      // COMMENT: What is the purpose of the following placeholder image?
+      // COMMENT: If there is not an image available for that object it will return a placeholder image and not break the page.
       let placeholderImage = 'http://www.newyorkpaddy.com/images/covers/NoCoverAvailable.jpg';
 
-      // COMMENT: Explain how ternary operators are being used below.
+      // COMMENT: Checking to see if variable exists. If true return left side of colon if false right side. In this case either return variable if true or if not available object (or empty string).
       return {
         title: title ? title : 'No title available',
         author: authors ? authors[0] : 'No authors available',
@@ -62,7 +66,7 @@ app.get('/api/v1/books/find', (req, res) => {
     .catch(console.error)
 })
 
-// COMMENT: How does this route differ from the route above? What does ':isbn' refer to in the code below?
+// COMMENT: This route has an arguement. isbn is the argument.
 app.get('/api/v1/books/find/:isbn', (req, res) => {
   let url = 'https://www.googleapis.com/books/v1/volumes';
   superagent.get(url)
